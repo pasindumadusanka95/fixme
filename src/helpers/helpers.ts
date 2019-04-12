@@ -13,16 +13,34 @@ export const multiFilter = (
 };
 
 export const develop = process.env.REACT_APP_ENV === "development";
+export const local = process.env.REACT_APP_ENV === "local";
 
 export const customPageView = (url: string) => {
-  if (!develop) {
+  if (!develop || !local) {
     pageview(url);
   }
 };
 
-export const customOutboundLink = (url: string) =>
-  develop
-    ? window.open(url, "_blank")
-    : outboundLink({ label: url }, () => {
-        window.open(url, "_blank");
-      });
+export const customOutboundLink = (url: string) => {
+  if (develop || local) {
+    const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.target = "_blank";
+      link.style.display = "none";
+      link.setAttribute('rel','noopener noreferrer')
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  } else {
+    outboundLink({ label: url }, () => {
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.target = "_blank";
+      link.style.display = "none";
+      link.setAttribute('rel','noopener noreferrer')
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link)
+     });
+  }
+};

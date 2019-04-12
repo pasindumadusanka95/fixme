@@ -8,12 +8,14 @@ $opacity: 0.3;
   margin-left: -15px;
   margin-right: -15px;
   a:hover {
+    color: #0056b3;
     text-decoration: none !important;
   }
   .projects {
     @include media-breakpoint-up(md) {
       &-tile-tag-wrapper {
-        max-width: 50%;
+        max-width: 70%;
+        max-height: 100%;
       }
     }
     &-title {
@@ -32,7 +34,7 @@ $opacity: 0.3;
       }
     }
     &-description {
-      bottom: 0;
+      bottom: auto;
       display: flex;
       font-family: $font-1;
       font-size: 1em;
@@ -41,7 +43,7 @@ $opacity: 0.3;
       position: absolute;
       right: 0;
       text-align: justify;
-      top: 0;
+      top: auto;
       visibility: hidden;
       z-index: 2;
       &-text {
@@ -55,6 +57,7 @@ $opacity: 0.3;
       &-bottom-wrapper {
         height: 80%;
         position: relative;
+        visibility: visible;
       }
       &-top-wrapper {
         height: 20%;
@@ -93,18 +96,25 @@ $opacity: 0.3;
           .projects-description {
             visibility: visible;
           }
+          .projects-tile-bottom-wrapper{
+            visibility: hidden;
+          }
         }
       }
       &-logo {
-        max-height: 100%;
+        height: 100%;
+        width: 100%;
         object-fit: contain;
       }
       &-logo-wrapper {
         display: inline-flex;
         height: 100%;
-        left: 7%;
-        position: relative;
+        left: 57%;
+        position: absolute;
         top: 7%;
+        visibility: visible;
+        min-width: 50%;
+        max-width: 100%;
       }
     }
     &-tile-tag {

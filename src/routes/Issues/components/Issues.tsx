@@ -1,11 +1,9 @@
-import "../../../styles/issues.css";
-
-import { parse } from "query-string";
-import * as React from "react";
-import * as ReactMarkdown from "react-markdown";
-
 import { push } from "connected-react-router";
+import { parse } from "query-string";
 import { stringify } from "querystring";
+import React from "react";
+import Helmet from "react-helmet";
+import  ReactMarkdown from "react-markdown";
 import ReactPaginate from "react-paginate";
 import FixMeFooter from "../../../components/FixMeFooter/FixMeFooter";
 import FixMeNavbar from "../../../components/FixMeNavbar/FixMeNavbar";
@@ -13,6 +11,7 @@ import Spinner from "../../../components/Spinner";
 import { filters } from "../../../helpers/consts";
 import { customOutboundLink, customPageView } from "../../../helpers/helpers";
 import { issuesListMockData } from "../../../helpers/mockData";
+import "../../../styles/issues.css";
 import { IProject } from "../../Projects/modules/projectReducer";
 import Tag from "./icons/icon-tag.svg";
 import Time from "./icons/icon-time.svg";
@@ -30,9 +29,10 @@ const icons = {
 
 export interface IParams {
   experience_needed?: string[] | string;
-  language?: string[];
+  language?: string[] | string;
   type?: string[] | string;
   ordering?: string;
+  project_id?: string[] | string;
 }
 
 interface IIssuesProps {
@@ -47,7 +47,7 @@ interface IIssuesProps {
   readonly getProjects: () => any;
 }
 
-const getParamsFromProps = (props: IIssuesProps) => {
+const getParamsFromProps = (props: IIssuesProps): IParams => {
   const { experience_needed, type, language, ordering, project_id } = parse(
     props.search
   );
@@ -68,7 +68,11 @@ const getParamsFromProps = (props: IIssuesProps) => {
         ? [project_id]
         : project_id
       : undefined,
-    ordering
+    ordering: ordering
+      ? Array.isArray(ordering)
+        ? ordering[0]
+        : ordering
+      : undefined
   };
 };
 
@@ -83,6 +87,10 @@ export default class Issues extends React.PureComponent<
   };
 
   public componentDidMount(): void {
+    const scrolltoRoot = document.getElementById("root");
+    if (!!scrolltoRoot) {
+      scrolltoRoot.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
     this.props.getIssues(this.state.params);
     this.props.getProjects();
     customPageView(window.location.pathname + window.location.search);
@@ -96,6 +104,10 @@ export default class Issues extends React.PureComponent<
       const params = getParamsFromProps(this.props);
       this.setState({ params });
       this.props.getIssues(params);
+      const scrolltoDiv = document.getElementById("scrollableDiv");
+      if (!!scrolltoDiv) {
+        scrolltoDiv.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
     }
   }
 
@@ -110,6 +122,13 @@ export default class Issues extends React.PureComponent<
     return (
       <div className="row issues-container">
         <section className="container">
+          <Helmet>
+            <title>Fixme | Issues</title>
+            <meta
+              name="description"
+              content="Find open issues of projects on the FixMe platform according to skill level and technologies of choice."
+            />
+          </Helmet>
           <FixMeNavbar white={true} />
 
           <div className="row my-5">
@@ -145,7 +164,7 @@ export default class Issues extends React.PureComponent<
                 </div>
               </div>
             </div>
-            <div className="col-md-8 col-12" id="scrollableDiv">
+            <div className="col-md-8 col-12 issuelist" id="scrollableDiv">
               <div className="d-flex justify-content-between mb-4">
                 <h2 className="col-12">
                   Showing {(page - 1) * 20}-{Math.min(page * 20, issuesLength)}{" "}
